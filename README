@@ -1,3 +1,3 @@
 User-space TCP connections bandwith limiter.
 
-Meaned to be used as target for "itpables ... -j REDIRECT"
+Meant to be used as target for "itpables ... -j REDIRECT"
