@@ -52,6 +52,12 @@ struct {
     char* buff; // "inbox", allocated only in case of a short write to this socket.
     int debt; // length of buff.
     long long total_read;
+
+    int current_quota;
+    int speed_limit;
+    int nice; /* less == more priority. Negative == exempt from total quota */
+    struct timeval last_access_time; /* We sort first by nice, then by last_access_time */
+
 } static fdinfo[MAXFD] = { [0 ... MAXFD - 1] = {0, 0, 0}};
 
 

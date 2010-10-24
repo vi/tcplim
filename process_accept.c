@@ -97,6 +97,10 @@ static void process_accept(int ss) {
     fdinfo[client].we_should_epoll_for_reads=0; /* first we get writing ready, only then start reading peer */
     fdinfo[client].group='c';
     fdinfo[client].total_read = 0;
+    fdinfo[client].current_quota = 1024; /* Let's allow to send it request without extra delays */
+    fdinfo[client].speed_limit = fd_upload_limit;
+    fdinfo[client].nice=10;
+    memset(&fdinfo[client].last_access_time, 0, sizeof(struct timeval));
     fdinfo[destsocket].peerfd = client;
     fdinfo[destsocket].status='|';
     fdinfo[destsocket].address=da;
@@ -108,6 +112,10 @@ static void process_accept(int ss) {
     fdinfo[destsocket].we_should_epoll_for_reads=0;  /* first we get writing ready, only then start reading peer */ 
     fdinfo[destsocket].group='d';
     fdinfo[destsocket].total_read = 0;
+    fdinfo[destsocket].current_quota = 4096; /* Generously allowing all requests up to 4 KiB to "pass under radar" */
+    fdinfo[destsocket].speed_limit = fd_download_limit;
+    fdinfo[destsocket].nice=10;
+    memset(&fdinfo[destsocket].last_access_time, 0, sizeof(struct timeval));
     
     printf("%s:%d -> %s:%d [%d->%d]\n", inet_ntoa(sa.sin_addr),
 	   ntohs(sa.sin_port), inet_ntoa(da.sin_addr),
