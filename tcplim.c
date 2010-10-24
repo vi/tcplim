@@ -1,4 +1,4 @@
-/* Simple Linux epoll-based single thread TCP relay. Public domain. Written by Vitaly "_Vi" Shukela.*/
+/* Simple Linux epoll-based single thread TCP bandwidth limiting relay. LGPL. Written by Vitaly "_Vi" Shukela. */
 
 /* We are not using EPOLLET, but use EPOLLONESHOT.
  * We store we_should_epoll_for_{reads,writes} and EPOLL_CTL_MODding almost every time we do something.
