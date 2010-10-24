@@ -1,2 +1,3 @@
-Simple Linux epoll-based single thread TCP relay.
-Supports getting destination address with SO_ORIGINAL_DST (to use with "-j REDIRECT" iptables target)
+User-space TCP connections bandwith limiter.
+
+Meaned to be used as target for "itpables ... -j REDIRECT"

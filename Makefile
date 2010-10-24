@@ -1,4 +1,4 @@
-all: tcprelay
+all: tcplim
 
-tcprelay: *.c
-		gcc -O2 tcprelay.c -o tcprelay
+tcplim: *.c
+		gcc -O2 tcplim.c -o tcplim
