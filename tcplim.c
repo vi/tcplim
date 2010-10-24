@@ -66,6 +66,12 @@ int connect_port;
 int need_address_redirection;
 int need_port_redirection;
 
+int total_upload_limit;
+int total_download_limit;
+int fd_upload_limit;
+int fd_download_limit;
+int timetick;
+
 
 static void parse_argv(int argc, char* argv[]); 
 static void process_read(int fd);  // we are both able to read from fd and write to fdinfo[fd].peerfd
