@@ -100,7 +100,7 @@ static void process_accept(int ss) {
     fdinfo[client].current_quota = 1024; /* Let's allow to send it request without extra delays */
     fdinfo[client].speed_limit = fd_upload_limit;
     fdinfo[client].nice=10;
-    memset(&fdinfo[client].last_access_time, 0, sizeof(struct timeval));
+    memset(&fdinfo[client].last_quota_bump_time, 0, sizeof(struct timeval));
     fdinfo[destsocket].peerfd = client;
     fdinfo[destsocket].status='|';
     fdinfo[destsocket].address=da;
@@ -115,7 +115,7 @@ static void process_accept(int ss) {
     fdinfo[destsocket].current_quota = 4096; /* bump_quotas will cut it down if speed limit is less than 2048 */
     fdinfo[destsocket].speed_limit = fd_download_limit;
     fdinfo[destsocket].nice=10;
-    memset(&fdinfo[destsocket].last_access_time, 0, sizeof(struct timeval));
+    memset(&fdinfo[destsocket].last_quota_bump_time, 0, sizeof(struct timeval));
     
     printf("%s:%d -> %s:%d [%d->%d]\n", inet_ntoa(sa.sin_addr),
 	   ntohs(sa.sin_port), inet_ntoa(da.sin_addr),
