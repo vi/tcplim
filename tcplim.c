@@ -53,6 +53,9 @@ struct {
     int debt; // length of buff.
     long long total_read;
 
+    long long total_read_last;
+    int rate;
+
     int current_quota;
     int speed_limit;
     int nice; /* less == more priority. Negative == exempt from total quota */
@@ -91,6 +94,7 @@ static void close_fd(int fd); // close both fd and peer fd. Clean up debt buffer
 static void epoll_update(int fd); // call epoll_ctl for this fd accroding to we_should_epoll_for_* fields.
 static void process_stdin();
 static void bump_quotas(int milliseconds);
+static void update_rates(int milliseconds);
 #include "process_read.c"
 #include "process_debt.c"
 #include "process_accept.c"
@@ -100,6 +104,7 @@ static void bump_quotas(int milliseconds);
 #include "epoll_update.c"
 #include "process_stdin.c"
 #include "bump_quotas.c"
+#include "update_rates.c"
 
 
 int main(int argc, char *argv[])
@@ -109,6 +114,8 @@ int main(int argc, char *argv[])
     listen_socket_and_setup_epoll();
 
     gettimeofday(&time_last, NULL);
+
+    int millisecond_accumulator_for_update_rates=0;
 
     struct epoll_event events[MAX_EPOLL_EVENTS_AT_ONCE];
     /* Main event loop */
@@ -125,12 +132,21 @@ int main(int argc, char *argv[])
 	    struct timeval time;
 	    int milliseconds;
 	    gettimeofday(&time, NULL);
+
 	    milliseconds = (time.tv_sec - time_last.tv_sec)*1000 + (time.tv_usec - time_last.tv_usec)/1000;
 
 	    if(milliseconds) {
 		memcpy(&time_last, &time, sizeof time);
 		bump_quotas(milliseconds);
 	    }
+
+	    millisecond_accumulator_for_update_rates += milliseconds;
+
+	    if(millisecond_accumulator_for_update_rates >= 1000) {
+		update_rates(millisecond_accumulator_for_update_rates);
+		millisecond_accumulator_for_update_rates=0;
+	    }
+
 	}
 
 

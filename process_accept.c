@@ -101,6 +101,8 @@ static void process_accept(int ss) {
     fdinfo[client].speed_limit = fd_upload_limit;
     fdinfo[client].nice=10;
     memset(&fdinfo[client].last_quota_bump_time, 0, sizeof(struct timeval));
+    fdinfo[client].rate=0;
+    fdinfo[client].total_read_last=0;
     fdinfo[destsocket].peerfd = client;
     fdinfo[destsocket].status='|';
     fdinfo[destsocket].address=da;
@@ -116,6 +118,8 @@ static void process_accept(int ss) {
     fdinfo[destsocket].speed_limit = fd_download_limit;
     fdinfo[destsocket].nice=10;
     memset(&fdinfo[destsocket].last_quota_bump_time, 0, sizeof(struct timeval));
+    fdinfo[destsocket].rate=0;
+    fdinfo[destsocket].total_read_last=0;
     
     printf("%s:%d -> %s:%d [%d->%d]\n", inet_ntoa(sa.sin_addr),
 	   ntohs(sa.sin_port), inet_ntoa(da.sin_addr),
