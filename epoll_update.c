@@ -13,7 +13,11 @@ static void epoll_update(int fd) {
     
     dpf(epoll_update_msgs[fdinfo[fd].we_should_epoll_for_reads + 2*fdinfo[fd].we_should_epoll_for_writes], fd);
 
-    if (fdinfo[fd].we_should_epoll_for_reads) {
+    if (!fdinfo[fd].current_quota) {
+	dpf("        but the quota is exhausted\n");
+    }
+
+    if (fdinfo[fd].we_should_epoll_for_reads && fdinfo[fd].current_quota) {
 	ev.events |= EPOLLIN;
     }
     if (fdinfo[fd].we_should_epoll_for_writes) {

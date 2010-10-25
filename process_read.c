@@ -2,8 +2,12 @@
 static void process_read(int fd) {
     dpf("Selecting %d for reading. Peer is %d.\n", fd, fdinfo[fd].peerfd);
     ssize_t ret, ret2;
+    ssize_t len = sizeof buf;
+    if(fdinfo[fd].current_quota < len) {
+	len = fdinfo[fd].current_quota;
+    }
 recv_was_interrupted:
-    ret = recv(fd, &buf, sizeof buf, 0);
+    ret = recv(fd, &buf, len, 0);
     dpf("    got %d bytes\n", ret);
     if (ret == 0) {
 	/* EOF */
@@ -38,6 +42,7 @@ recv_was_interrupted:
 	}
     } else {
 	fdinfo[fd].total_read += ret;
+	fdinfo[fd].current_quota -= ret;
 send_was_interrupted:
 	ret2 = send(fdinfo[fd].peerfd, &buf, ret, 0);
 	dpf("    sent %d bytes\n", ret2);

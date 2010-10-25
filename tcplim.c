@@ -87,6 +87,7 @@ static void listen_socket_and_setup_epoll(); // setup main socket to listen (and
 static void close_fd(int fd); // close both fd and peer fd. Clean up debt buffers and fdinfo states.
 static void epoll_update(int fd); // call epoll_ctl for this fd accroding to we_should_epoll_for_* fields.
 static void process_stdin();
+static void bump_quotas(int milliseconds);
 #include "process_read.c"
 #include "process_debt.c"
 #include "process_accept.c"
@@ -95,6 +96,7 @@ static void process_stdin();
 #include "close_fd.c"
 #include "epoll_update.c"
 #include "process_stdin.c"
+#include "bump_quotas.c"
 
 
 int main(int argc, char *argv[])
@@ -103,10 +105,27 @@ int main(int argc, char *argv[])
     
     listen_socket_and_setup_epoll();
 
+    struct timeval time_last;
+    gettimeofday(&time_last, NULL);
+
     struct epoll_event events[MAX_EPOLL_EVENTS_AT_ONCE];
     /* Main event loop */
     for (;;) {
-	int nfds = epoll_wait(kdpfd, events, MAX_EPOLL_EVENTS_AT_ONCE, -1);
+	int nfds = epoll_wait(kdpfd, events, MAX_EPOLL_EVENTS_AT_ONCE, timetick);
+
+	{
+	    struct timeval time;
+	    int milliseconds;
+	    gettimeofday(&time, NULL);
+	    milliseconds = (time.tv_sec - time_last.tv_sec)*1000 + (time.tv_usec - time_last.tv_usec)/1000;
+
+	    if(milliseconds) {
+		memcpy(&time_last, &time, sizeof time);
+		bump_quotas(milliseconds);
+	    }
+	}
+
+
 
 	if (nfds == -1) {
 	    if (errno == EAGAIN || errno == EINTR) {
