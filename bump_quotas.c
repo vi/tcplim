@@ -1,4 +1,5 @@
 
+
 static void bump_quotas(int milliseconds) {
     quotas_are_full = 1;
     dpf("Bumping quotas for %d milliseconds\n", milliseconds);
@@ -27,6 +28,7 @@ static void bump_quotas(int milliseconds) {
 	    fdinfo[fd].current_quota = fdinfo[fd].speed_limit * 2;
 	} else {
 	    quotas_are_full = 0;
+	    memcpy(&fdinfo[fd].last_quota_bump_time, &time_last, sizeof time_last);
 	    dpf("    quotas are not full\n");
 	}
 

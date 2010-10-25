@@ -79,6 +79,7 @@ int fd_download_limit;
 int timetick;
 
 int quotas_are_full; /* if all quota buffers are not drained, we can epoll_wait without a timeout */
+struct timeval time_last;
 
 
 static void parse_argv(int argc, char* argv[]); 
@@ -107,7 +108,6 @@ int main(int argc, char *argv[])
     
     listen_socket_and_setup_epoll();
 
-    struct timeval time_last;
     gettimeofday(&time_last, NULL);
 
     struct epoll_event events[MAX_EPOLL_EVENTS_AT_ONCE];
