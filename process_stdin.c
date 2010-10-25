@@ -10,7 +10,7 @@ static void list_connections() {
 
 	int peerfd = fdinfo[fd].peerfd;
 	
-	printf("    %s:%d -> %s:%d [%d->%d] %lld:%lld limit: %d:%d\n",
+	printf("    %s:%d -> %s:%d [%d->%d] %lld:%lld limit: %d:%d nice: %d:%d\n",
 		inet_ntoa(fdinfo[fd].address.sin_addr),
 	       ntohs(fdinfo[fd].address.sin_port),
 	       inet_ntoa(fdinfo[peerfd].address.sin_addr),
@@ -20,7 +20,9 @@ static void list_connections() {
 	       fdinfo[fd].total_read,
 	       fdinfo[peerfd].total_read,
 	       fdinfo[fd].speed_limit,
-	       fdinfo[peerfd].speed_limit);
+	       fdinfo[peerfd].speed_limit,
+	       fdinfo[fd].nice,
+	       fdinfo[peerfd].nice);
     }
 }
 
@@ -92,9 +94,19 @@ static void process_stdin() {
 		}
 	    }
 	    break;
+	case 'n':
+	    if(!arg[0] || !arg2[0]) {
+                printf("nice fd nice\n");
+	    } else {
+		int fd = atoi(arg);
+		int nice = atoi(arg2);
+		fdinfo[fd].nice = nice;
+		quotas_are_full=0;
+	    }
+	    break;
 	case '\0':
 	    break;
 	default:
-	    printf("Commands: Quit List Kill Timetick lImit Default_limits tOtal_limits Reset_all_fds_to_default\n");
+	    printf("Commands: Quit List Kill Timetick lImit Default_limits tOtal_limits Reset_all_fds_to_default Nice\n");
     }
 }

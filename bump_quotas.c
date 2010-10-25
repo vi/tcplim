@@ -57,7 +57,6 @@ static void bump_quotas(int milliseconds) {
 	    delta+=1;
 	}
 	    
-	int max_quota = fdinfo[fd].speed_limit;
 
 	int* total_limit;
 	int* total_delta;
@@ -69,10 +68,15 @@ static void bump_quotas(int milliseconds) {
             total_limit = &total_download_limit;
 	    total_delta = &total_download_delta;
 	}
+	
+	int max_quota = fdinfo[fd].speed_limit;
 
 	if(max_quota > *total_limit) {
 	    max_quota = *total_limit;
 	}
+	
+
+	max_quota = 1LL * max_quota * timetick / 1000;
 
 	if (delta > *total_delta) {
 	    delta = *total_delta;  
