@@ -62,9 +62,39 @@ static void process_stdin() {
 		quotas_are_full=0;
 	    }
 	    break;
+	case 'd':
+	    if(!arg[0] || !arg2[0]) {
+                printf("d new_upload_limit new_download_limit\n");
+	    } else {
+		int upl = atoi(arg);
+		int dll = atoi(arg2);
+		fd_upload_limit = upl;
+		fd_download_limit = dll;
+		quotas_are_full=0;
+	    }
+	    break;
+	case 'o':
+	    if(!arg[0] || !arg2[0]) {
+                printf("o new_upload_total_limit new_download_total_limit\n");
+	    } else {
+		int upl = atoi(arg);
+		int dll = atoi(arg2);
+		total_upload_limit = upl;
+		total_download_limit = dll;
+		quotas_are_full=0;
+	    }
+	    break;
+	case 'r': 
+	    {
+		int fd;
+		for(fd=0; fd<MAXFD; ++fd) {
+		    fdinfo[fd].speed_limit = ((fdinfo[fd].group=='c') ? fd_upload_limit : fd_download_limit);
+		}
+	    }
+	    break;
 	case '\0':
 	    break;
 	default:
-	    printf("Commands: quit list kill timetick lImit\n");
+	    printf("Commands: Quit List Kill Timetick lImit Default_limits tOtal_limits Reset_all_fds_to_default\n");
     }
 }
