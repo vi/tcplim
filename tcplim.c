@@ -78,6 +78,8 @@ int fd_upload_limit;
 int fd_download_limit;
 int timetick;
 
+int quotas_are_full; /* if all quota buffers are not drained, we can epoll_wait without a timeout */
+
 
 static void parse_argv(int argc, char* argv[]); 
 static void process_read(int fd);  // we are both able to read from fd and write to fdinfo[fd].peerfd
@@ -111,7 +113,13 @@ int main(int argc, char *argv[])
     struct epoll_event events[MAX_EPOLL_EVENTS_AT_ONCE];
     /* Main event loop */
     for (;;) {
-	int nfds = epoll_wait(kdpfd, events, MAX_EPOLL_EVENTS_AT_ONCE, timetick);
+	int nfds;
+	if (quotas_are_full) {
+	    dpf("quotas are full, so waiting as long as we want\n");
+	    nfds = epoll_wait(kdpfd, events, MAX_EPOLL_EVENTS_AT_ONCE, -1);
+	} else {
+	    nfds = epoll_wait(kdpfd, events, MAX_EPOLL_EVENTS_AT_ONCE, timetick);
+	}
 
 	{
 	    struct timeval time;

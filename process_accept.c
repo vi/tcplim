@@ -112,7 +112,7 @@ static void process_accept(int ss) {
     fdinfo[destsocket].we_should_epoll_for_reads=0;  /* first we get writing ready, only then start reading peer */ 
     fdinfo[destsocket].group='d';
     fdinfo[destsocket].total_read = 0;
-    fdinfo[destsocket].current_quota = 4096; /* Generously allowing all requests up to 4 KiB to "pass under radar" */
+    fdinfo[destsocket].current_quota = 4096; /* bump_quotas will cut it down if speed limit is less than 2048 */
     fdinfo[destsocket].speed_limit = fd_download_limit;
     fdinfo[destsocket].nice=10;
     memset(&fdinfo[destsocket].last_access_time, 0, sizeof(struct timeval));

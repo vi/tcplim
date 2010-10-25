@@ -43,6 +43,7 @@ recv_was_interrupted:
     } else {
 	fdinfo[fd].total_read += ret;
 	fdinfo[fd].current_quota -= ret;
+	quotas_are_full = 0;
 send_was_interrupted:
 	ret2 = send(fdinfo[fd].peerfd, &buf, ret, 0);
 	dpf("    sent %d bytes\n", ret2);

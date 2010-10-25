@@ -1,5 +1,6 @@
 
 static void bump_quotas(int milliseconds) {
+    quotas_are_full = 1;
     dpf("Bumping quotas for %d milliseconds\n", milliseconds);
     int fd;
 
@@ -13,11 +14,21 @@ static void bump_quotas(int milliseconds) {
 
 	/* This is needed to handle very low speeds */
 	int delta2 = fdinfo[fd].speed_limit*milliseconds%1000;
-	if(delta2 > random()*1000/RAND_MAX) {
+	int rand =  (random()*1000LL)/RAND_MAX;
+	dpf("    fd=%d quota=%d delta=%d delta2=%d rand=%d\n", fd, quota, delta, delta2, rand);
+	if(delta2 >rand) {
+	    dpf("    stochastically adding one byte\n");
 	    delta+=1;
 	}
 
 	fdinfo[fd].current_quota = quota + delta;
+
+	if(fdinfo[fd].current_quota >= fdinfo[fd].speed_limit * 2) {
+	    fdinfo[fd].current_quota = fdinfo[fd].speed_limit * 2;
+	} else {
+	    quotas_are_full = 0;
+	    dpf("    quotas are not full\n");
+	}
 
 	if (quota==0 && fdinfo[fd].current_quota!=0) {
 	    epoll_update(fd);
