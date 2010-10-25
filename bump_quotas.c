@@ -1,14 +1,35 @@
-
+int cmp_fds(const void* en1, const void* en2) {
+    const int *e1 = en1, *e2 = en2;
+    if(e1==e2) return 0;
+    if(fdinfo[*e1].nice < fdinfo[*e2].nice) return -1;
+    if(fdinfo[*e1].nice > fdinfo[*e2].nice) return 1;
+    if(fdinfo[*e1].last_quota_bump_time.tv_sec < fdinfo[*e2].last_quota_bump_time.tv_sec) return -1;
+    if(fdinfo[*e1].last_quota_bump_time.tv_sec > fdinfo[*e2].last_quota_bump_time.tv_sec) return 1;
+    if(fdinfo[*e1].last_quota_bump_time.tv_usec < fdinfo[*e2].last_quota_bump_time.tv_usec) return -1;
+    if(fdinfo[*e1].last_quota_bump_time.tv_usec > fdinfo[*e2].last_quota_bump_time.tv_usec) return 1;
+    return 0;
+}
 
 static void bump_quotas(int milliseconds) {
     quotas_are_full = 1;
     dpf("Bumping quotas for %d milliseconds\n", milliseconds);
-    int fd;
+    int fd,i;
 
-    for(fd=0; fd<MAXFD; ++fd) {
+    int quota_bump_queue[MAXFD];
+    int n;
+
+    for(fd=0,i=0; fd<MAXFD; ++fd) {
 	if(fdinfo[fd].status == 0 || fdinfo[fd].status == '.') {
 	    continue;
 	}
+	quota_bump_queue[i++] = fd;
+    }
+    n=i;
+
+    qsort(&quota_bump_queue, n, sizeof quota_bump_queue[0], cmp_fds);
+
+    for(i=0; i<n; ++i) {
+	fd = quota_bump_queue[i];
 
 	int quota = fdinfo[fd].current_quota;
 	int delta =  fdinfo[fd].speed_limit*milliseconds/1000;
