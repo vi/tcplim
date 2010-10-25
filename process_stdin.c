@@ -10,7 +10,7 @@ static void list_connections() {
 
 	int peerfd = fdinfo[fd].peerfd;
 	
-	printf("    %s:%d -> %s:%d [%d->%d] %lld:%lld limit: %d:%d nice: %d:%d rate: %d:%d\n",
+	printf("    %s:%d -> %s:%d [%d->%d] %lld:%lld limit=%d:%d nice=%d:%d rate=%d:%d\n",
 		inet_ntoa(fdinfo[fd].address.sin_addr),
 	       ntohs(fdinfo[fd].address.sin_port),
 	       inet_ntoa(fdinfo[peerfd].address.sin_addr),
