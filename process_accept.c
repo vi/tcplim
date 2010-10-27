@@ -121,8 +121,7 @@ static void process_accept(int ss) {
     fdinfo[destsocket].rate=0;
     fdinfo[destsocket].total_read_last=0;
     
-    printf("%s:%d -> %s:%d [%d->%d]\n", inet_ntoa(sa.sin_addr),
-	   ntohs(sa.sin_port), inet_ntoa(da.sin_addr),
-	   ntohs(da.sin_port), client, destsocket);
+    printf("%s:%d -> ", inet_ntoa(sa.sin_addr), ntohs(sa.sin_port));
+    printf("%s:%d [%d->%d]\n",  inet_ntoa(da.sin_addr), ntohs(da.sin_port), client, destsocket); 
 
 }
