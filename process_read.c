@@ -7,7 +7,7 @@ static void process_read(int fd) {
 	len = fdinfo[fd].current_quota;
     }
 recv_was_interrupted:
-    ret = recv(fd, &buf, len, 0);
+    ret = recv(fd, buf, len, 0);
     dpf("    got %d bytes\n", ret);
     if (ret == 0) {
 	/* EOF */
@@ -45,7 +45,7 @@ recv_was_interrupted:
 	fdinfo[fd].current_quota -= ret;
 	quotas_are_full = 0;
 send_was_interrupted:
-	ret2 = send(fdinfo[fd].peerfd, &buf, ret, 0);
+	ret2 = send(fdinfo[fd].peerfd, buf, ret, 0);
 	dpf("    sent %d bytes\n", ret2);
 	if (ret2 == 0) {
 	    fprintf(stderr, "send returned 0? Submit to codinghorror?\n");
