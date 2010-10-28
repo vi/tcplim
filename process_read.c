@@ -1,6 +1,7 @@
 
 static void process_read(int fd) {
     dpf("Selecting %d for reading. Peer is %d.\n", fd, fdinfo[fd].peerfd);
+    char buf[BUFSIZE];
     ssize_t ret, ret2;
     ssize_t len = sizeof buf;
     if(fdinfo[fd].current_quota < len) {
