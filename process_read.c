@@ -7,6 +7,10 @@ static void process_read(int fd) {
     if(fdinfo[fd].current_quota < len) {
 	len = fdinfo[fd].current_quota;
     }
+    if (len < 0) {
+	fprintf(stderr, "INTERNAL ERROR: quota is negative!\n");
+	len = sizeof buf;
+    }
 recv_was_interrupted:
     ret = recv(fd, buf, len, 0);
     dpf("    got %d bytes\n", ret);
