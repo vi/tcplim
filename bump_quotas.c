@@ -28,9 +28,9 @@ static void bump_quotas(int milliseconds) {
 
     qsort(&quota_bump_queue, n, sizeof quota_bump_queue[0], cmp_fds);
 
-    int total_upload_delta =  1LL*total_upload_limit*milliseconds/1000;
+    long long int total_upload_delta =  1LL*total_upload_limit*milliseconds/1000;
     int total_upload_delta2 =  1LL*total_upload_limit*milliseconds%1000;
-    int total_download_delta =  1LL*total_download_limit*milliseconds/1000;
+    long long int total_download_delta =  1LL*total_download_limit*milliseconds/1000;
     int total_download_delta2 =  1LL*total_download_limit*milliseconds%1000;
 	
     if(total_upload_delta2 > random()*1000LL/RAND_MAX) {
@@ -46,7 +46,7 @@ static void bump_quotas(int milliseconds) {
 	fd = quota_bump_queue[i];
 
 	int quota = fdinfo[fd].current_quota;
-	int delta =  1LL*fdinfo[fd].speed_limit*milliseconds/1000;
+	long long int delta =  1LL*fdinfo[fd].speed_limit*milliseconds/1000;
 
 	/* This is needed to handle very low speeds */
 	int delta2 = 1LL*fdinfo[fd].speed_limit*milliseconds%1000;
@@ -59,7 +59,7 @@ static void bump_quotas(int milliseconds) {
 	    
 
 	int* total_limit;
-	int* total_delta;
+	long long int* total_delta;
 
 	if(fdinfo[fd].group == 'c') {
             total_limit = &total_upload_limit;
@@ -84,6 +84,10 @@ static void bump_quotas(int milliseconds) {
 
         if (quota+delta > max_quota) {
 	    delta = max_quota - quota;
+	}
+
+	if(quota + delta > INT_MAX) {
+	    delta = INT_MAX - quota;
 	}
 
 	if (delta) {
