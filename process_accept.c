@@ -47,7 +47,7 @@ static void process_accept(int ss) {
 	if(need_port_redirection || need_address_redirection) {
 	    msg = "Cannot create a socket to destination address.\n"
 		"If you are using REDIRECT feature, you should not connect here directly.\n"
-		"Also check you iptables rule. It should not redirect tcplim's connections back to tcplim. Normal example:\n"
+		"Also check your iptables rule. It should not redirect tcplim's connections back to tcplim. Normal example:\n"
 		"\"iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner tcplim_user -j REDIRECT --to tcplim_port\"\n";
 	}
 
