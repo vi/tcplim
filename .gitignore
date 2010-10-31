@@ -2,3 +2,7 @@
 tcplim
 .*.swp
 ~*
+VERSION
+/s
+/valerr
+*.deb

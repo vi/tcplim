@@ -1,9 +1,12 @@
 #include <limits.h>
+#include "VERSION"
 
 static void parse_argv(int argc, char* argv[]) {
     if (argc != 10) {
 	printf
-	    ("Usage: tcplim 0.0.0.0 1236 80.83.124.150 2222 65536 65536 32768 32768 50\n"
+	    (
+	     "tcplim version " VERSION "\n"
+	     "Usage: tcplim 0.0.0.0 1236 80.83.124.150 2222 65536 65536 32768 32768 50\n"
 	     "              bind_ip port connect_ip connect_port total_upload_limit t_download_l per_connection_upload_limit p_c_download_l timetick\n"
 	     "\n"
 	     "limits are in bytes per second. 0 means Umlimited [converted to INT_MAX internally]\nTimetick is in milliseconds.\n"
