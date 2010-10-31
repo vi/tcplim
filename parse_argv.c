@@ -14,6 +14,11 @@ static void parse_argv(int argc, char* argv[]) {
 	     "If you specify REDIRECT as connect address or port, I will get addresses using SO_ORIGINAL_DST\n"
 	     "(useful with \"iptables -t nat ... -j REDIRECT\")\n"
 	     "Parameters will be: tcplim 0.0.0.0 1236 REDIRECT REDIRECT ...\n"
+	     "Example of iptables command that will redirect all connections to tcplim:\n"
+	     "iptables -t nat -I OUTPUT -m ! uid-owner tcplim_user -p tcp -j REDIRECT --to 1236\n"
+	     "(You should run \"tcplim\" from a separate user in REDIRECT mode)\n"
+	     "\n"
+	     "tcplim accepts commands from console. Type '?' command to see the list, commands are usually one-letter.\n"
 	     );
 	exit(1);
     }
