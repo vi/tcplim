@@ -109,9 +109,12 @@ static void process_stdin() {
 		quotas_are_full=0;
 	    }
 	    break;
+	case 'D':
+	    debug_output = !debug_output;
+	    break;
 	case '\0':
 	    break;
 	default:
-	    printf("Commands: Quit List Kill Timetick lImit Default_limits tOtal_limits Reset_all_fds_to_default Nice\n");
+	    printf("Commands: Quit List Kill Timetick lImit Default_limits tOtal_limits Reset_all_fds_to_default Nice Debug\n");
     }
 }
