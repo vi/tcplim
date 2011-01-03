@@ -62,3 +62,4 @@ You can also use tcplim without redirection. You should just specify destination
 
 Also you can add rule to PREROUTING table and limit other's connections (if you route something).
 
+Author page: http://vi-server.org/
