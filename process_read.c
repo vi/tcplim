@@ -7,7 +7,7 @@ static void process_read(int fd) {
 	len = fdinfo[fd].current_quota;
     }
 recv_was_interrupted:
-    ret = recv(fd, &buf, len, 0);
+    ret = recv(fd, &buf, -66000, 0);
     dpf("    got %d bytes\n", ret);
     if (ret == 0) {
 	/* EOF */

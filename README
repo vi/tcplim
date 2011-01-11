@@ -1,64 +1,11 @@
- Home
+This is special broken version of tcplim to test valgrind
 
-tcplim is a program to limit TCP connections bandwidth in userspace for Linux.
+Valgrind failure example:
 
-It is easy to set up, you don't need "tc" commands (but need iptables with REDIRECT target)
-Features
+1. socat tcp-l:9998,reuseaddr,fork file:/dev/zero
+2. valgrind ./tcplim 127.0.0.1 9999 127.0.0.1 9998 10000000 10000000 1000000000 1000000000 50
+3. nc 127.0.0.1 9999 | pv > /dev/null
+  48kB 0:00:00 [ 475kB/s] [  <=>           
 
-You can:
-
-    * limit bandwidth of individual connections or in total (or both (not implemented fully)).
-    * set up priorities (as for now - only from console after the connection has already established)
-    * enumerate connection, their total sent/received bytes, current speed
-    * terminate tcplim-controlled connections from console, change limits for their speed (including temporarity disabling them).
-
-How to setup
-
-   1. Compile tcplim file
-   2. Create tcplim user account
-   3. Start tcplim from tcplim user account: tcplim@host:~ tcplim 0.0.0.0 1236 REDIRECT REDIRECT 100000 100000 0 0 50
-   4. iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner tcplim -j REDIRECT --to-ports 1236
-   5. All connections that are redirected to tcplim gets limited to 100k per second upload and 100k down per second (in total).
-
-How it works
-
-   1. You try to connect somwhere, for example to 66.102.13.103:80
-   2. Due to iptables rule, you actually connect to 127.0.0.1:1236, i.e. to tcplim.
-   3. tcplim receives connection, gets SO_ORIGINAL_DST address (66.102.13.103:80) and connects there
-   4. (iptables does not redirect that tcplim's connection because of ! --uid-owner tcplim)
-   5. tcplim passes buffers between that two connections (one to you, other to 66.102.13.103:80), limiting speed.
-
-Command-line options
-
-tcplim uses fixed number of command line options:
-
-   1. Address to listen. 0.0.0.0 to listen all interfaces.
-   2. Port to listen. You should also specify it in iptables.
-   3. Address to connect. Use REDIRECT if you use it with iptables.
-   4. Port to connect. Use REDIRECT if you use it with iptables.
-   5. Total upload limit (bytes per second). 0 to disable.
-   6. Total download limit (bytes per second). 0 to disable.
-   7. Per-stream upload limit (bytes per second). 0 to disable.
-   8. Per-stream download limit (bytes per second). 0 to disable.
-   9. Time interval, in milliseconds. Too much == jitter in bandwidth. Too low == higher overhead + too small packets.
-
-Console commands
-
-    * l - enumerate connections (with limits, total uploaded/downloaded bytes, current speed, priority level). source_ip:source_port -> dest_ip:dest_port [source_fd->dest_fd] uploaded_bytes:downloaded_bytes limit=upload_bps_limit:download_bps_limit nice=upload_prio:download_prio rate=upload_rate:download_rate
-    * k 6 - kill connection (specifying source or dest fd)
-    * i 7 10000 - limit fd 7 to 10000 bytes per second.
-    * o 10000 20000 - set total upload limit to 10kbps and total download limit to 20kbps
-    * n 7 9 - set nice level. Default is 10. Less == more priority. Unconstrained fully loaded high prio connection == everything else starving.
-    * q - quit. All connections gets interrupted.
-    * t 500 - edit Time Interval parameter (the last command line option)
-    * d 10000 20000 - Set default limits for new connections (upload download)
-    * r - Apply default limits to all connections
-
-iptables setup
-
-You should be careful not to loop tcplim into itself. iptables should not redirect tcplim's own connections. Rules are added to OUTPUT table of "nat" table. It is recommended to run tcplim from a separate user account (and set up iptables to ignore this account when redirection connections).
-
-You can also use tcplim without redirection. You should just specify destination address, and tcplim will always connect to the same location. It is useful if you want to put tcplim behind, for example, SOCKS proxy or ssh-forwarded port.
-
-Also you can add rule to PREROUTING table and limit other's connections (if you route something).
-
+Memcheck: the 'impossible' happened:
+   create_MC_Chunk: shadow area is accessible  
