@@ -221,6 +221,7 @@ int main(int argc, char *argv[])
 		if(fdinfo[fd].readready && 
 			fdinfo[fdinfo[fd].peerfd].writeready && 
 			fdinfo[fdinfo[fd].peerfd].debt==0 && 
+			fdinfo[fd].current_quota > 0 &&
 			(fdinfo[fd].status=='|' || fdinfo[fd].status=='r') ) {
 
 		    process_read(fd);
