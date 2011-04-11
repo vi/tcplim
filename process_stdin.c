@@ -1,20 +1,20 @@
-static void list_connections() {
-    int fd;
-    for(fd=0; fd<MAXFD; ++fd) {
-	if(fdinfo[fd].status == 0 || fdinfo[fd].status == '.') {
-	    continue;
-	}
-	if(fdinfo[fd].group != 'c') {
-	    continue;
-	}
+static void print_connection(int fd, const char* prologue, const char* epilogue) {
+    int peerfd = fdinfo[fd].peerfd;
+    
+    printf("%s%s:%d -> ",
+	   prologue,
+	   inet_ntoa(fdinfo[fd].address.sin_addr),
+	   ntohs(fdinfo[fd].address.sin_port)
+	  );
+    printf("%s:%d [%d->%d]",
+	   inet_ntoa(fdinfo[peerfd].address.sin_addr),
+	   ntohs(fdinfo[peerfd].address.sin_port), 
+	   fd, 
+	   peerfd);
 
-	int peerfd = fdinfo[fd].peerfd;
-	
-	printf("    %s:%d -> ",
-	       inet_ntoa(fdinfo[fd].address.sin_addr),
-	       ntohs(fdinfo[fd].address.sin_port)
-	      );
-	printf("%s:%d [%d->%d] %lld:%lld limit=%d:%d nice=%d:%d rate=%d:%d\n",
+
+    if (fdinfo[fd].total_read || fdinfo[peerfd].total_read) {
+	printf("%s:%d [%d->%d] %lld:%lld limit=%d:%d nice=%d:%d rate=%d:%d",
 	       inet_ntoa(fdinfo[peerfd].address.sin_addr),
 	       ntohs(fdinfo[peerfd].address.sin_port), 
 	       fd, 
@@ -28,6 +28,21 @@ static void list_connections() {
 	       fdinfo[fd].rate,
 	       fdinfo[peerfd].rate
 	       );
+    }
+    printf("%s", epilogue);
+}
+
+static void list_connections() {
+    int fd;
+    for(fd=0; fd<MAXFD; ++fd) {
+	if(fdinfo[fd].status == 0 || fdinfo[fd].status == '.') {
+	    continue;
+	}
+	if(fdinfo[fd].group != 'c') {
+	    continue;
+	}
+
+	print_connection(fd, "    ", "\n");
     }
 }
 
