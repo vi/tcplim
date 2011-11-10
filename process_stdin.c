@@ -1,4 +1,6 @@
-static void print_connection(int fd, const char* prologue, const char* epilogue) {
+#include "main.h"
+
+void print_connection(int fd, const char* prologue, const char* epilogue) {
     int peerfd = fdinfo[fd].peerfd;
     
     printf("%s%s:%d -> ",
@@ -32,7 +34,7 @@ static void print_connection(int fd, const char* prologue, const char* epilogue)
     printf("%s", epilogue);
 }
 
-static void list_connections() {
+void list_connections() {
     int fd;
     for(fd=0; fd<MAXFD; ++fd) {
 	if(fdinfo[fd].status == 0 || fdinfo[fd].status == '.') {
@@ -46,7 +48,7 @@ static void list_connections() {
     }
 }
 
-static void process_stdin() {
+void process_stdin() {
     dpf("processing stdin\n");
     char cmd[256]={0};
     char arg[256]={0};

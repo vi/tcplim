@@ -1,7 +1,8 @@
 #include <limits.h>
 #include "VERSION"
+#include "main.h"
 
-static void parse_argv(int argc, char* argv[]) {
+void parse_argv(int argc, char* argv[]) {
     if (getenv("DEBUG")) {
 	debug_output = 1;
     } else {

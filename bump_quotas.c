@@ -1,3 +1,6 @@
+#include <limits.h>
+#include "main.h"
+
 int cmp_fds(const void* en1, const void* en2) {
     int e1 = *(const int*)en1, e2 = *(const int*)en2;
     if(e1==e2) return 0;
@@ -10,7 +13,7 @@ int cmp_fds(const void* en1, const void* en2) {
     return 0;
 }
 
-static void bump_quotas(int milliseconds) {
+void bump_quotas(int milliseconds) {
     quotas_are_full = 1;
     dpf("Bumping quotas for %d milliseconds\n", milliseconds);
     int fd,i;
