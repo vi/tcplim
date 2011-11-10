@@ -1,7 +1,7 @@
 all: tcplim
 
 tcplim: *.c VERSION
-	gcc -O2 -g3 tcplim.c -o tcplim
+	gcc -O2 -g3 main.c -o tcplim
 
 githead=$(wildcard .git/HEAD)
 
