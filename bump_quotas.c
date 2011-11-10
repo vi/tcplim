@@ -78,8 +78,17 @@ void bump_quotas(int milliseconds) {
 	    max_quota = *total_limit;
 	}
 	
+	{
+	    unsigned long long max_quota_frac =  1LL * max_quota * timetick % 1000;
+	    max_quota = 1LL * max_quota * timetick / 1000;
+	    if(max_quota_frac > rand) {
+		dpf("    stochastically adding one byte to max_quota\n");
+		max_quota+=1;
+	    }
+	}
 
-	max_quota = 1LL * max_quota * timetick / 1000;
+	dpf("    max_quota=%d\n", max_quota);
+
 
 	if (delta > *total_delta) {
 	    delta = *total_delta;  
