@@ -86,8 +86,8 @@ extern int fd_upload_limit;
 extern int fd_download_limit;
 extern int timetick;
 
-int quotas_are_full; /* if all quota buffers are not drained, we can epoll_wait without a timeout */
-struct timeval time_last;
+extern int quotas_are_full; /* if all quota buffers are not drained, we can epoll_wait without a timeout */
+extern struct timeval time_last;
 
 void parse_argv(int argc, char* argv[]); 
 void process_read(int fd);  // we are both able to read from fd and write to fdinfo[fd].peerfd
